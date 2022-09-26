@@ -68,7 +68,7 @@ class MediaController extends Controller
                     }
                 }
             } else {
-                $file->storeAs('tmp', $media->hash . '/media.' . $file->extension());
+                $file->storeAs('tmp/', $media->hash . '/media.' . $file->extension());
             }
 
             $media->append(['thumbs']);
