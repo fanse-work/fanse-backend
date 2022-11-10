@@ -91,7 +91,7 @@ class MediaController extends Controller
                 // now, if it is an image, convert to WebP to reduce the size dramatically
                 if ($type == Media::TYPE_IMAGE) {
                     $webp = Webp::make($file);
-                    $outputpath = storage_path('app/public/media/'.$media->hash. '/media.webp');
+                    $outputpath = storage_path('app/public/tmp/'.$media->hash. '/media.webp');
                     if ($webp->save($outputpath)) {
                         // File is saved successfully
                         $uploadpath = 'media/'.$media->hash. '/media.webp';
