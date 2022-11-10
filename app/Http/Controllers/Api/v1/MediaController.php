@@ -96,7 +96,8 @@ class MediaController extends Controller
                         // File is saved successfully
                         $uploadpath = 'media/'.$media->hash. '/media.webp';
                         Storage::disk('s3')->put($uploadpath, file_get_contents($outputpath));                    
-                    }      
+                    }
+                    else throw new \Exception("Could not convert image to $outputpath");
                 }
             }
 
