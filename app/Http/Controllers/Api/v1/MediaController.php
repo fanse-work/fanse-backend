@@ -7,6 +7,7 @@ use App\Models\Media;
 use Illuminate\Http\Request;
 use FFMpeg;
 use Log;
+use Webp;
 use Illuminate\Support\Facades\Storage;
 
 class MediaController extends Controller
@@ -82,11 +83,20 @@ class MediaController extends Controller
                         //Log::debug($e->getMessage());
                         $mediaOpener = FFMpeg::open('tmp/' . $media->hash . '/media.' . $file->extension());
                     }
-                }
+                }          
             } else {
                 $file->storeAs('tmp/', $media->hash . '/media.' . $file->extension());
                 $filepath = 'media/'.$media->hash. '/media.' . $file->extension();
                 Storage::disk('s3')->put($filepath, file_get_contents($file));
+                // now, if it is an image, convert to WebP to reduce the size dramatically
+                if ($type == Media::TYPE_IMAGE) {
+                    $webp = Webp::make($file);
+                    $outputpath = 'media/'.$media->hash. '/media.webp';
+                    if ($webp->save(public_path($outputpath))) {
+                        // File is saved successfully
+                        Storage::disk('s3')->put($outputpath, file_get_contents(public_path($outputpath)));                    
+                    }      
+                }
             }
 
             $media->append(['thumbs']);
