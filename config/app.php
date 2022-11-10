@@ -180,6 +180,7 @@ return [
         ProtoneMedia\LaravelFFMpeg\Support\ServiceProvider::class,
         App\Providers\FortifyServiceProvider::class,
         App\Providers\PaymentServiceProvider::class,
+        Buglinjo\LaravelWebp\WebpServiceProvider::class,
 
     ],
 
@@ -236,6 +237,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'FFMpeg' => ProtoneMedia\LaravelFFMpeg\Support\FFMpeg::class,
         'Payment' => App\Providers\Payment\Facades\Payment::class,
+        'Webp' => Buglinjo\LaravelWebp\Facades\Webp::class,
 
     ],
 
