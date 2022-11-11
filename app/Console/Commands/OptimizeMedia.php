@@ -7,6 +7,7 @@ use App\Models\Media;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\UploadedFile;
 use Webp;
+use Storage;
 
 class OptimizeMedia extends Command
 {
