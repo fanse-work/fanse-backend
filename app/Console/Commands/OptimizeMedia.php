@@ -38,7 +38,10 @@ class OptimizeMedia extends Command
      */
     public function handle()
     {
-        $imagesToBeOptimized = Media::where([["optimized","=",null],["type","=",0]])->limit(20)->get();
+        $imagesToBeOptimized = Media::where([["optimized","=",null],
+                                            ["type","=",0],
+                                            ["status","=",Media::STATUS_ACTIVE]])
+                                            ->limit(20)->get();
         foreach($imagesToBeOptimized as $im){ 
             $inputpath = storage_path('app/public/tmp/image');
             $f = fopen($inputpath,"w");
