@@ -4,9 +4,9 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\Media;
-use File;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Http\UploadedFile;
 use Webp;
-use UploadedFile;
 
 class OptimizeMedia extends Command
 {
@@ -65,35 +65,26 @@ class OptimizeMedia extends Command
         return 0;
     }
 
-    
     /**
      * Create an UploadedFile object from absolute path 
      *
-     * @static
      * @param     string $path
-     * @param     bool $public default false
-     * @return    object(Symfony\Component\HttpFoundation\File\UploadedFile)
-     * @author    Alexandre Thebaldi
+     * @param     bool $test default true
+     * @return    object(Illuminate\Http\UploadedFile)
+     * 
+     * Based of Alexandre Thebaldi answer here:
+     * https://stackoverflow.com/a/32258317/6411540
      */
-
-    protected static function pathToUploadedFile( $path, $public = false )
-    {
-        $name = File::name( $path );
-
-        $extension = File::extension( $path );
-
+    protected function pathToUploadedFile( $path, $test = true ) {
+        $filesystem = new Filesystem;
+        
+        $name = $filesystem->name( $path );
+        $extension = $filesystem->extension( $path );
         $originalName = $name . '.' . $extension;
-
-        $mimeType = File::mimeType( $path );
-
-        $size = File::size( $path );
-
+        $mimeType = $filesystem->mimeType( $path );
         $error = null;
 
-        $test = $public;
-
-        $object = new UploadedFile( $path, $originalName, $mimeType, $size, $error, $test );
-
-        return $object;
+        return new UploadedFile( $path, $originalName, $mimeType, $error, $test );
     }
+
 }
