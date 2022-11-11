@@ -41,16 +41,26 @@ class OptimizeMedia extends Command
      */
     public function handle()
     {
+
         $imagesToBeOptimized = Media::where([["optimized","=",null],
                                             ["type","=",0],
                                             ["status","=",Media::STATUS_ACTIVE]])
                                             ->limit(20)->get();
+
         foreach($imagesToBeOptimized as $im){ 
+
+            if(!in_array(strtolower($im->extension),["jpg","jpeg","png","tiff","tif"])){  // check if extension can be converted to Webp    
+                $im->optimized = true;
+                $im->save();          
+                continue;
+            }
+
             $inputpath = storage_path("app/public/tmp/image.$im->extension");
             $f = fopen($inputpath,"w");
             fwrite($f,file_get_contents($im->url)); // Download image from S3 to local
             fclose($f);
             $uploadedFile = static::pathToUploadedFile($inputpath);
+
             $webp = Webp::make($uploadedFile); // convert to Webp
             $outputpath = storage_path('app/public/tmp/image.webp');
             if ($webp->save($outputpath)) {
@@ -61,6 +71,7 @@ class OptimizeMedia extends Command
                 $im->save();          
             }
             else throw new \Exception("Could not convert image to $outputpath");
+
         }
         return 0;
     }
