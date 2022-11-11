@@ -4,6 +4,9 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\Media;
+use File;
+use Webp;
+use UploadedFile;
 
 class OptimizeMedia extends Command
 {
@@ -47,7 +50,8 @@ class OptimizeMedia extends Command
             $f = fopen($inputpath,"w");
             fwrite($f,file_get_contents($im->url)); // Download image from S3 to local
             fclose($f);
-            $webp = Webp::make($inputpath); // convert to Webp
+            $uploadedFile = static::pathToUploadedFile($inputpath);
+            $webp = Webp::make($uploadedFile); // convert to Webp
             $outputpath = storage_path('app/public/tmp/image.webp');
             if ($webp->save($outputpath)) {
                 // File is saved successfully, now upload to S3
@@ -59,5 +63,37 @@ class OptimizeMedia extends Command
             else throw new \Exception("Could not convert image to $outputpath");
         }
         return 0;
+    }
+
+    
+    /**
+     * Create an UploadedFile object from absolute path 
+     *
+     * @static
+     * @param     string $path
+     * @param     bool $public default false
+     * @return    object(Symfony\Component\HttpFoundation\File\UploadedFile)
+     * @author    Alexandre Thebaldi
+     */
+
+    protected static function pathToUploadedFile( $path, $public = false )
+    {
+        $name = File::name( $path );
+
+        $extension = File::extension( $path );
+
+        $originalName = $name . '.' . $extension;
+
+        $mimeType = File::mimeType( $path );
+
+        $size = File::size( $path );
+
+        $error = null;
+
+        $test = $public;
+
+        $object = new UploadedFile( $path, $originalName, $mimeType, $size, $error, $test );
+
+        return $object;
     }
 }
