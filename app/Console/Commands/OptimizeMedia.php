@@ -46,7 +46,7 @@ class OptimizeMedia extends Command
                                             ["status","=",Media::STATUS_ACTIVE]])
                                             ->limit(20)->get();
         foreach($imagesToBeOptimized as $im){ 
-            $inputpath = storage_path('app/public/tmp/image');
+            $inputpath = storage_path("app/public/tmp/image.$im->extension");
             $f = fopen($inputpath,"w");
             fwrite($f,file_get_contents($im->url)); // Download image from S3 to local
             fclose($f);
